@@ -43,8 +43,14 @@ export function Features() {
   return (
     <section id="features" className="py-24 bg-background">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Header */}
         <div className="text-center mb-16">
-          <h2 className="text-4xl font-black text-foreground mb-4">
+          <div className="inline-flex items-center gap-2 text-primary text-sm font-medium mb-4">
+            <div className="w-4 h-px bg-primary" />
+            Nos avantages
+            <div className="w-4 h-px bg-primary" />
+          </div>
+          <h2 className="text-4xl font-black text-foreground mb-4 tracking-tight">
             Pourquoi choisir DirectPrint ?
           </h2>
           <p className="text-lg text-muted-foreground max-w-xl mx-auto">
@@ -52,16 +58,17 @@ export function Features() {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        {/* Feature grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {features.map((feature) => (
             <div
               key={feature.title}
-              className="p-6 rounded-2xl border hover:border-primary/30 hover:shadow-md transition-all group"
+              className="p-6 rounded-2xl border bg-card hover:border-primary/40 hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 group cursor-default"
             >
-              <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center mb-4 group-hover:bg-primary transition-colors">
-                <feature.icon className="h-6 w-6 text-primary group-hover:text-primary-foreground transition-colors" />
+              <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center mb-5 group-hover:bg-primary transition-colors duration-200">
+                <feature.icon className="h-5 w-5 text-primary group-hover:text-primary-foreground transition-colors duration-200" />
               </div>
-              <h3 className="font-bold text-lg mb-2">{feature.title}</h3>
+              <h3 className="font-bold text-lg mb-2 tracking-tight">{feature.title}</h3>
               <p className="text-sm text-muted-foreground leading-relaxed">
                 {feature.description}
               </p>

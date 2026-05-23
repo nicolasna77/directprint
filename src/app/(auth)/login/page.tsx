@@ -9,7 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { toast } from "sonner";
-import { Loader2 } from "lucide-react";
+import { Loader2, LogIn } from "lucide-react";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -37,17 +37,19 @@ export default function LoginPage() {
   }
 
   return (
-    <Card className="w-full max-w-md shadow-xl">
-      <CardHeader className="text-center pb-2">
-        <h1 className="text-2xl font-black">Connexion</h1>
-        <p className="text-sm text-muted-foreground">
+    <Card className="w-full shadow-lg border">
+      <CardHeader className="text-center pb-4 pt-7">
+        <h1 className="text-2xl font-black tracking-tight">Connexion</h1>
+        <p className="text-sm text-muted-foreground mt-1">
           Accédez à votre espace DirectPrint
         </p>
       </CardHeader>
-      <CardContent>
+      <CardContent className="px-6 pb-7">
         <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="email">Email</Label>
+          <div className="space-y-1.5">
+            <Label htmlFor="email" className="text-sm font-semibold">
+              Adresse email
+            </Label>
             <Input
               id="email"
               type="email"
@@ -55,10 +57,15 @@ export default function LoginPage() {
               value={form.email}
               onChange={(e) => setForm({ ...form, email: e.target.value })}
               required
+              className="h-11"
             />
           </div>
-          <div className="space-y-2">
-            <Label htmlFor="password">Mot de passe</Label>
+          <div className="space-y-1.5">
+            <div className="flex items-center justify-between">
+              <Label htmlFor="password" className="text-sm font-semibold">
+                Mot de passe
+              </Label>
+            </div>
             <Input
               id="password"
               type="password"
@@ -66,23 +73,44 @@ export default function LoginPage() {
               value={form.password}
               onChange={(e) => setForm({ ...form, password: e.target.value })}
               required
+              className="h-11"
             />
           </div>
           <Button
             type="submit"
-            className="w-full bg-primary hover:bg-primary/90"
+            className="w-full h-11 text-sm font-semibold mt-2"
             disabled={loading}
           >
-            {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-            Se connecter
+            {loading ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Connexion…
+              </>
+            ) : (
+              <>
+                <LogIn className="mr-2 h-4 w-4" />
+                Se connecter
+              </>
+            )}
           </Button>
         </form>
-        <p className="text-center text-sm text-muted-foreground mt-4">
-          Pas encore de compte ?{" "}
-          <Link href="/register" className="text-primary font-medium hover:underline">
-            Créer un compte
-          </Link>
-        </p>
+
+        <div className="relative my-5">
+          <div className="absolute inset-0 flex items-center">
+            <span className="w-full border-t" />
+          </div>
+          <div className="relative flex justify-center text-xs text-muted-foreground">
+            <span className="bg-card px-3">Pas encore de compte ?</span>
+          </div>
+        </div>
+
+        <Button
+          variant="outline"
+          className="w-full h-11"
+          render={<Link href="/register" />}
+        >
+          Créer un compte gratuit
+        </Button>
       </CardContent>
     </Card>
   );

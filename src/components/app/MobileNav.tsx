@@ -31,15 +31,18 @@ export function MobileNav() {
 
   return (
     <>
-      {/* Top bar mobile */}
-      <div className="lg:hidden fixed top-0 left-0 right-0 z-50 bg-background border-b h-14 flex items-center justify-between px-4">
-        <Link href="/" className="flex items-center gap-2 font-bold text-lg">
-          <Printer className="h-5 w-5 text-primary" />
+      {/* Top bar */}
+      <div className="lg:hidden fixed top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur border-b h-14 flex items-center justify-between px-4">
+        <Link href="/" className="flex items-center gap-2.5 font-bold text-lg group">
+          <div className="w-7 h-7 rounded-lg bg-primary flex items-center justify-center transition-transform group-hover:scale-105">
+            <Printer className="h-3.5 w-3.5 text-primary-foreground" />
+          </div>
           <span>Direct<span className="text-primary">Print</span></span>
         </Link>
         <button
           onClick={() => setOpen(!open)}
-          className="p-2 rounded-lg hover:bg-accent transition-colors"
+          className="w-9 h-9 rounded-lg flex items-center justify-center hover:bg-accent transition-colors"
+          aria-label="Menu"
         >
           {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
         </button>
@@ -48,49 +51,58 @@ export function MobileNav() {
       {/* Drawer overlay */}
       {open && (
         <div
-          className="lg:hidden fixed inset-0 z-40 bg-black/50"
+          className="lg:hidden fixed inset-0 z-40 bg-black/40 backdrop-blur-sm"
           onClick={() => setOpen(false)}
         />
       )}
 
       {/* Drawer */}
-      <div className={cn(
-        "lg:hidden fixed top-14 left-0 bottom-0 z-50 w-72 bg-background border-r transform transition-transform duration-200",
-        open ? "translate-x-0" : "-translate-x-full"
-      )}>
-        <nav className="flex-1 p-4 space-y-1">
-          {navItems.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              onClick={() => setOpen(false)}
-              className={cn(
-                "flex items-center gap-3 px-3 py-3 rounded-lg text-sm font-medium transition-colors",
-                pathname === item.href
-                  ? "bg-primary/10 text-primary"
-                  : "text-muted-foreground hover:bg-accent hover:text-foreground"
-              )}
-            >
-              <item.icon className="h-5 w-5 shrink-0" />
-              {item.label}
-            </Link>
-          ))}
+      <div
+        className={cn(
+          "lg:hidden fixed top-14 left-0 bottom-0 z-50 w-72 bg-background border-r shadow-2xl transform transition-transform duration-200 ease-out",
+          open ? "translate-x-0" : "-translate-x-full"
+        )}
+      >
+        <nav className="p-3 space-y-0.5">
+          {navItems.map((item) => {
+            const active = pathname === item.href;
+            return (
+              <Link
+                key={item.href}
+                href={item.href}
+                onClick={() => setOpen(false)}
+                className={cn(
+                  "relative flex items-center gap-3 px-3 py-3 rounded-xl text-sm font-medium transition-all",
+                  active
+                    ? "bg-primary/10 text-primary"
+                    : "text-muted-foreground hover:bg-accent hover:text-foreground"
+                )}
+              >
+                {active && (
+                  <span className="absolute left-0 top-1/2 -translate-y-1/2 w-0.5 h-5 bg-primary rounded-full" />
+                )}
+                <item.icon className={cn("h-5 w-5 shrink-0", active && "text-primary")} />
+                {item.label}
+              </Link>
+            );
+          })}
         </nav>
 
-        <div className="absolute bottom-0 left-0 right-0 p-4 border-t">
-          <div className="flex items-center gap-3 mb-3">
-            <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-primary-foreground text-sm font-bold">
+        {/* User section */}
+        <div className="absolute bottom-0 left-0 right-0 p-4 border-t bg-background space-y-3">
+          <div className="flex items-center gap-3 px-1">
+            <div className="w-9 h-9 rounded-full bg-primary flex items-center justify-center text-primary-foreground text-sm font-bold shrink-0">
               {session?.user?.name?.[0]?.toUpperCase() ?? "U"}
             </div>
             <div className="min-w-0">
-              <p className="text-sm font-medium truncate">{session?.user?.name}</p>
+              <p className="text-sm font-semibold truncate">{session?.user?.name}</p>
               <p className="text-xs text-muted-foreground truncate">{session?.user?.email}</p>
             </div>
           </div>
           <Button
             variant="ghost"
             size="sm"
-            className="w-full justify-start text-red-500 hover:text-red-600 hover:bg-red-50"
+            className="w-full justify-start text-muted-foreground hover:text-destructive hover:bg-destructive/5 transition-colors"
             onClick={() => {
               setOpen(false);
               signOut({ fetchOptions: { onSuccess: () => { window.location.href = "/"; } } });
@@ -102,22 +114,28 @@ export function MobileNav() {
         </div>
       </div>
 
-      {/* Bottom tab bar (phones) */}
-      <div className="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-background border-t safe-area-bottom">
+      {/* Bottom tab bar */}
+      <div className="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-background/95 backdrop-blur border-t">
         <div className="flex">
-          {navItems.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              className={cn(
-                "flex-1 flex flex-col items-center gap-1 py-2 text-xs font-medium transition-colors",
-                pathname === item.href ? "text-primary" : "text-muted-foreground"
-              )}
-            >
-              <item.icon className={cn("h-5 w-5", pathname === item.href && "text-primary")} />
-              {item.label}
-            </Link>
-          ))}
+          {navItems.map((item) => {
+            const active = pathname === item.href;
+            return (
+              <Link
+                key={item.href}
+                href={item.href}
+                className={cn(
+                  "flex-1 flex flex-col items-center gap-1 py-2.5 text-xs font-medium transition-colors relative",
+                  active ? "text-primary" : "text-muted-foreground"
+                )}
+              >
+                {active && (
+                  <span className="absolute top-0 left-1/2 -translate-x-1/2 w-8 h-0.5 bg-primary rounded-full" />
+                )}
+                <item.icon className={cn("h-5 w-5", active ? "text-primary" : "text-muted-foreground/70")} />
+                {item.label}
+              </Link>
+            );
+          })}
         </div>
       </div>
     </>
