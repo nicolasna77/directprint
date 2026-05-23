@@ -76,6 +76,8 @@ model Organization {
   createdAt    DateTime   @default(now())
 
   documents    Document[]
+
+  @@unique([name, city])
 }
 
 model PrintPoint {

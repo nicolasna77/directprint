@@ -59,10 +59,24 @@ export default function SendPage() {
   const [result, setResult] = useState<{ id: string; trackingCode: string } | null>(null);
   const [dragOver, setDragOver] = useState(false);
   const [search, setSearch] = useState("");
+  const [searching, setSearching] = useState(false);
 
   useEffect(() => {
-    fetch("/api/organizations").then((r) => r.json()).then(setOrganizations);
-  }, []);
+    if (search.length < 2) {
+      setOrganizations([]);
+      return;
+    }
+    setSearching(true);
+    const timer = setTimeout(async () => {
+      try {
+        const res = await fetch(`/api/organizations?q=${encodeURIComponent(search)}`);
+        setOrganizations(await res.json());
+      } finally {
+        setSearching(false);
+      }
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [search]);
 
   const onDrop = useCallback((e: React.DragEvent) => {
     e.preventDefault();
@@ -71,12 +85,6 @@ export default function SendPage() {
     if (dropped) setFile(dropped);
   }, []);
 
-  const filteredOrgs = organizations.filter(
-    (o) =>
-      o.name.toLowerCase().includes(search.toLowerCase()) ||
-      o.city.toLowerCase().includes(search.toLowerCase()) ||
-      orgTypeLabels[o.type]?.toLowerCase().includes(search.toLowerCase())
-  );
 
   const pages = Math.max(1, file ? Math.ceil(file.size / 50000) : 1);
   const price = (pages * 0.3).toFixed(2);
@@ -269,7 +277,9 @@ export default function SendPage() {
               </button>
               <div>
                 <h2 className="text-xl font-bold">Choisissez l&apos;organisme destinataire</h2>
-                <p className="text-sm text-muted-foreground">{filteredOrgs.length} organismes disponibles</p>
+                <p className="text-sm text-muted-foreground">
+                  {search.length >= 2 && !searching ? `${organizations.length} résultat(s)` : "Recherchez par ville ou nom"}
+                </p>
               </div>
             </div>
           </CardHeader>
@@ -284,17 +294,26 @@ export default function SendPage() {
               />
             </div>
 
-            {filteredOrgs.length === 0 ? (
+            {search.length < 2 ? (
               <div className="text-center py-10 text-muted-foreground text-sm">
                 <Building2 className="h-8 w-8 mx-auto mb-3 opacity-30" />
-                Aucun organisme trouvé. Essayez une autre recherche.
+                Tapez au moins 2 caractères pour rechercher
+              </div>
+            ) : searching ? (
+              <div className="flex items-center justify-center py-10">
+                <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+              </div>
+            ) : organizations.length === 0 ? (
+              <div className="text-center py-10 text-muted-foreground text-sm">
+                <Building2 className="h-8 w-8 mx-auto mb-3 opacity-30" />
+                Aucun organisme trouvé pour &quot;{search}&quot;
               </div>
             ) : (
               <div className="space-y-2 max-h-80 overflow-y-auto pr-1">
-                {filteredOrgs.map((org) => (
+                {organizations.map((org) => (
                   <button
                     key={org.id}
-                    onClick={() => setSelectedOrg(org)}
+                    onClick={() => { setSelectedOrg(org); }}
                     className={`w-full text-left p-4 rounded-xl border-2 transition-all ${
                       selectedOrg?.id === org.id
                         ? "border-primary bg-primary/5 shadow-sm"
